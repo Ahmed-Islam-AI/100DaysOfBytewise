@@ -1,78 +1,125 @@
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+class BinarySearchTreeNode:
+    def __init__(self, data):
+        self.data = data
+        self.left = None
+        self.right = None
 
-class BinarySearchTree:
-    def __init__(self):
-        self.root = None
+    def add_child(self, data):
+        if data == self.data:
+            return # node already exist
 
-    def insert(self, val):
-        if self.root is None:
-            self.root = TreeNode(val)
-        else:
-            self._insert_recursive(self.root, val)
-
-    def _insert_recursive(self, node, val):
-        if val < node.val:
-            if node.left is None:
-                node.left = TreeNode(val)
+        if data < self.data:
+            if self.left:
+                self.left.add_child(data)
             else:
-                self._insert_recursive(node.left, val)
+                self.left = BinarySearchTreeNode(data)
         else:
-            if node.right is None:
-                node.right = TreeNode(val)
+            if self.right:
+                self.right.add_child(data)
             else:
-                self._insert_recursive(node.right, val)
+                self.right = BinarySearchTreeNode(data)
+
+    #searching elements in the List
+    def search(self, val):
+        if self.data == val:
+            return True
+
+        if val < self.data:
+            if self.left:
+                return self.left.search(val)
+            else:
+                return False
+
+        if val > self.data:
+            if self.right:
+                return self.right.search(val)
+            else:
+                return False
+            
+    def find_min(self):
+        if self.left:
+            return self.left.find_min()
+        return self.data
+
+    def find_max(self):
+        if self.right:
+            return self.right.find_max()
+        return self.data
 
     def delete(self, val):
-        self.root = self._delete_recursive(self.root, val)
-
-    def _delete_recursive(self, node, val):
-        if node is None:
-            return None
-        if val < node.val:
-            node.left = self._delete_recursive(node.left, val)
-        elif val > node.val:
-            node.right = self._delete_recursive(node.right, val)
+        if val < self.data:
+            if self.left:
+                self.left = self.left.delete(val)
+        elif val > self.data:
+            if self.right:
+                self.right = self.right.delete(val)
         else:
-            if node.left is None:
-                return node.right
-            elif node.right is None:
-                return node.left
-            else:
-                min_val = self._find_min(node.right)
-                node.val = min_val
-                node.right = self._delete_recursive(node.right, min_val)
-        return node
+            if not self.left and not self.right:
+                return None
+            if not self.left:
+                return self.right
+            if not self.right:
+                return self.left
 
-    def _find_min(self, node):
-        while node.left:
-            node = node.left
-        return node.val
+            min_val = self.right.find_min()
+            self.data = min_val
+            self.right = self.right.delete(min_val)
 
-    def search(self, val):
-        return self._search_recursive(self.root, val)
+        return self
 
-    def _search_recursive(self, node, val):
-        if node is None or node.val == val:
-            return node
-        if val < node.val:
-            return self._search_recursive(node.left, val)
-        else:
-            return self._search_recursive(node.right, val)
+    def in_order_traversal(self):
+        elements = []
+        if self.left:
+            elements += self.left.in_order_traversal()
 
-# Example usage:
-bst = BinarySearchTree()
-bst.insert(5)
-bst.insert(3)
-bst.insert(7)
-bst.insert(2)
-bst.insert(4)
-bst.insert(6)
-bst.insert(8)
+        elements.append(self.data)
 
-print("Search for 5:", bst.search(5).val if bst.search(5) else "Not found")
-bst.delete(5)
-print("Search for 5 after deletion:", bst.search(5))
+        if self.right:
+            elements += self.right.in_order_traversal()
+
+        return elements
+
+
+def build_tree(elements):
+    print("Building tree with these elements:",elements)
+    root = BinarySearchTreeNode(elements[0])
+
+    for i in range(1,len(elements)):
+        root.add_child(elements[i])
+
+    return root
+
+if __name__ == '__main__':
+    numbers = [1,2,3,4,5,6,3,4,2]
+    numbers_tree = build_tree(numbers)
+    
+    print("In order traversal gives this sorted list:",numbers_tree.in_order_traversal())
+    
+    # Inserting a new element
+    numbers_tree.add_child(7)
+    print("In order traversal after inserting 7:", numbers_tree.in_order_traversal())
+
+    numbers_tree.add_child(0)
+    print("In order traversal after inserting 0:", numbers_tree.in_order_traversal())
+    
+    #search for element 15 and 3 
+    search_for = 15
+    print(search_for," is in the list? ", numbers_tree.search(search_for))
+    search_for = 3
+    print(search_for," is in the list? ", numbers_tree.search(search_for))
+    
+    
+    # for finding minimum element in the list 
+    print("Minimum value in the tree:", numbers_tree.find_min())
+    # for finding maximum element in the list 
+    print("Maximum value in the tree:", numbers_tree.find_max())
+
+    # Deleting elements
+    numbers_tree.delete(3)
+    print("In order traversal after deleting 3:", numbers_tree.in_order_traversal())
+
+    numbers_tree.delete(5)
+    print("In order traversal after deleting 5:", numbers_tree.in_order_traversal())
+
+    numbers_tree.delete(1)
+    print("In order traversal after deleting 1:", numbers_tree.in_order_traversal())
