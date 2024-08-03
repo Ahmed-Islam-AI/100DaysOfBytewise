@@ -19,7 +19,7 @@ To get started with the code in this repository, follow these steps:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/bytewise-100days.git
+   git clone https://github.com/Ahmed-Islam-AI/100DaysOfBytewise
 
 2. Navigate to the repository directory:
    ```sh
